@@ -1,35 +1,38 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import ContactForm from "./components/ContactForm/ContactForm.jsx";
+import SearchBox from "./components/SearchBox/SearchBox.jsx";
+import ContactList from "./components/ContactList/ContactList.jsx";
+
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { fetchContacts } from "./redux/contactsOps.js";
+import {
+  selectContacts,
+  selectIsError,
+  selectIsLoading,
+} from "./redux/contactsSlice.js";
+
+import "./App.css";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const dispatch = useDispatch();
+  const contacts = useSelector(selectContacts);
+  const isLoading = useSelector(selectIsLoading);
+  const isError = useSelector(selectIsError);
+
+  useEffect(() => {
+    dispatch(fetchContacts());
+  }, [dispatch]);
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <h1>Phonebook</h1>
+      <ContactForm />
+      <SearchBox />
+      {isLoading && <b>Loading contacts...</b>}
+      {isError && <b>Ops... Error. Please reload page!</b>}
+      {contacts.length > 0 && <ContactList />}
     </>
-  )
+  );
 }
 
-export default App
+export default App;
